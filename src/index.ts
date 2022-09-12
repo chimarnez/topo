@@ -1,4 +1,3 @@
-import HTMLTopo from "./topo/html-topo";
-import SVGTopo from "./topo/svg-topo";
+import * as Topo from "./topo/mix";
 
-export { HTMLTopo, SVGTopo };
+export default Topo;

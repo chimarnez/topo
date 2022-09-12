@@ -19,6 +19,7 @@ export abstract class Topo<T> {
 
 export class BaseTopo<T> {
   element: Element;
+  params: any;
   constructor(element: Element) {
     this.element = element;
   }
