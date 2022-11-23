@@ -53,7 +53,7 @@ class SVGTOPO<T extends keyof SVGElementTagNameMap, U>
 
 const SVGTopo: {
   [Property in keyof SVGElementTagNameMap]: <U>(
-    params: U
+    params?: U
   ) => SVGTOPO<Property, U>;
 } = {
   a: (params) => new SVGTOPO("a", params),
