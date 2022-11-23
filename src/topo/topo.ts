@@ -17,11 +17,12 @@ export abstract class Topo<T> {
   ): Topo<T>;
 }
 
-export class BaseTopo<T> {
+export class BaseTopo<T, U> {
   element: Element;
-  params: any;
-  constructor(element: Element) {
+  params?: U;
+  constructor(element: Element, params?: U) {
     this.element = element;
+    this.params = params;
   }
 
   addClss(...classesToAppend: string[]) {
@@ -44,11 +45,12 @@ export class BaseTopo<T> {
     fn(this as unknown as T);
     return this as unknown as T;
   }
+
   into(container: Element) {
     container.appendChild(this.element);
     return this as unknown as T;
   }
-  addTopos(...topos: BaseTopo<unknown>[]) {
+  addTopos(...topos: BaseTopo<unknown, unknown>[]) {
     topos.forEach((topo) => this.element.appendChild(topo.element));
     return this as unknown as T;
   }
@@ -59,5 +61,8 @@ export class BaseTopo<T> {
       (this.element as any).style[key] = styleProps[key];
     }
     return this as unknown as T;
+  }
+  opera<Y>(o: (topo: T) => Y) {
+    return o(this as unknown as T);
   }
 }

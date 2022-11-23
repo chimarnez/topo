@@ -7,22 +7,22 @@ function svgLikeElement<T extends keyof SVGElementTagNameMap>(
   return document.createElementNS("http://www.w3.org/2000/svg", tagName);
 }
 
-class SVGTOPO<T extends keyof SVGElementTagNameMap>
-  extends BaseTopo<SVGTOPO<T>>
+class SVGTOPO<T extends keyof SVGElementTagNameMap, U>
+  extends BaseTopo<SVGTOPO<T, U>, U>
   implements Topo<T>
 {
   element: SVGElementTagNameMap[T];
 
-  constructor(tagName: T) {
+  constructor(tagName: T, params?: U) {
     const element = svgLikeElement(tagName);
-    super(element);
+    super(element, params);
     this.element = element;
   }
 
-  attrs(attrName: string, fn: (el: SVGTOPO<T>) => any): SVGTOPO<T>;
-  attrs(attrName: string, value: string): SVGTOPO<T>;
-  attrs(attrs: ObjectWithStringKeys): SVGTOPO<T>;
-  attrs(attrs: string | ObjectWithStringKeys, value?: any): SVGTOPO<T> {
+  attrs(attrName: string, fn: (el: SVGTOPO<T, U>) => any): SVGTOPO<T, U>;
+  attrs(attrName: string, value: string): SVGTOPO<T, U>;
+  attrs(attrs: ObjectWithStringKeys): SVGTOPO<T, U>;
+  attrs(attrs: string | ObjectWithStringKeys, value?: any): SVGTOPO<T, U> {
     if (typeof attrs === "string") {
       this.element.setAttributeNS(
         null,
@@ -36,11 +36,11 @@ class SVGTOPO<T extends keyof SVGElementTagNameMap>
     }
     return this;
   }
-  event<U extends keyof SVGElementEventMap>(
-    eventName: U,
-    fn: (ev: SVGElementEventMap[U], ele?: SVGTOPO<T>) => void
+  event<Y extends keyof SVGElementEventMap>(
+    eventName: Y,
+    fn: (ev: SVGElementEventMap[Y], ele?: SVGTOPO<T, U>) => void
   ) {
-    const newEvent = (ev: SVGElementEventMap[U]) => {
+    const newEvent = (ev: SVGElementEventMap[Y]) => {
       fn(ev, this);
     };
     this.element.addEventListener(
@@ -51,70 +51,74 @@ class SVGTOPO<T extends keyof SVGElementTagNameMap>
   }
 }
 
-const SVGTopo = {
-  a: () => new SVGTOPO("a"),
-  animate: () => new SVGTOPO("animate"),
-  animateMotion: () => new SVGTOPO("animateMotion"),
-  animateTransform: () => new SVGTOPO("animateTransform"),
-  circle: () => new SVGTOPO("circle"),
-  clipPath: () => new SVGTOPO("clipPath"),
-  defs: () => new SVGTOPO("defs"),
-  desc: () => new SVGTOPO("desc"),
-  ellipse: () => new SVGTOPO("ellipse"),
-  feBlend: () => new SVGTOPO("feBlend"),
-  feColorMatrix: () => new SVGTOPO("feColorMatrix"),
-  feComponentTransfer: () => new SVGTOPO("feComponentTransfer"),
-  feComposite: () => new SVGTOPO("feComposite"),
-  feConvolveMatrix: () => new SVGTOPO("feConvolveMatrix"),
-  feDiffuseLighting: () => new SVGTOPO("feDiffuseLighting"),
-  feDisplacementMap: () => new SVGTOPO("feDisplacementMap"),
-  feDistantLight: () => new SVGTOPO("feDistantLight"),
-  feDropShadow: () => new SVGTOPO("feDropShadow"),
-  feFlood: () => new SVGTOPO("feFlood"),
-  feFuncA: () => new SVGTOPO("feFuncA"),
-  feFuncB: () => new SVGTOPO("feFuncB"),
-  feFuncG: () => new SVGTOPO("feFuncG"),
-  feFuncR: () => new SVGTOPO("feFuncR"),
-  feGaussianBlur: () => new SVGTOPO("feGaussianBlur"),
-  feImage: () => new SVGTOPO("feImage"),
-  feMerge: () => new SVGTOPO("feMerge"),
-  feMergeNode: () => new SVGTOPO("feMergeNode"),
-  feMorphology: () => new SVGTOPO("feMorphology"),
-  feOffset: () => new SVGTOPO("feOffset"),
-  fePointLight: () => new SVGTOPO("fePointLight"),
-  feSpecularLighting: () => new SVGTOPO("feSpecularLighting"),
-  feSpotLight: () => new SVGTOPO("feSpotLight"),
-  feTile: () => new SVGTOPO("feTile"),
-  feTurbulence: () => new SVGTOPO("feTurbulence"),
-  filter: () => new SVGTOPO("filter"),
-  foreignObject: () => new SVGTOPO("foreignObject"),
-  g: () => new SVGTOPO("g"),
-  image: () => new SVGTOPO("image"),
-  line: () => new SVGTOPO("line"),
-  linearGradient: () => new SVGTOPO("linearGradient"),
-  marker: () => new SVGTOPO("marker"),
-  mask: () => new SVGTOPO("mask"),
-  metadata: () => new SVGTOPO("metadata"),
-  mpath: () => new SVGTOPO("mpath"),
-  path: () => new SVGTOPO("path"),
-  pattern: () => new SVGTOPO("pattern"),
-  polygon: () => new SVGTOPO("polygon"),
-  polyline: () => new SVGTOPO("polyline"),
-  radialGradient: () => new SVGTOPO("radialGradient"),
-  rect: () => new SVGTOPO("rect"),
-  script: () => new SVGTOPO("script"),
-  set: () => new SVGTOPO("set"),
-  stop: () => new SVGTOPO("stop"),
-  style: () => new SVGTOPO("style"),
-  svg: () => new SVGTOPO("svg"),
-  switch: () => new SVGTOPO("switch"),
-  symbol: () => new SVGTOPO("symbol"),
-  text: () => new SVGTOPO("text"),
-  textPath: () => new SVGTOPO("textPath"),
-  title: () => new SVGTOPO("title"),
-  tspan: () => new SVGTOPO("tspan"),
-  use: () => new SVGTOPO("use"),
-  view: () => new SVGTOPO("view"),
+const SVGTopo: {
+  [Property in keyof SVGElementTagNameMap]: <U>(
+    params: U
+  ) => SVGTOPO<Property, U>;
+} = {
+  a: (params) => new SVGTOPO("a", params),
+  animate: (params) => new SVGTOPO("animate", params),
+  animateMotion: (params) => new SVGTOPO("animateMotion", params),
+  animateTransform: (params) => new SVGTOPO("animateTransform", params),
+  circle: (params) => new SVGTOPO("circle", params),
+  clipPath: (params) => new SVGTOPO("clipPath", params),
+  defs: (params) => new SVGTOPO("defs", params),
+  desc: (params) => new SVGTOPO("desc", params),
+  ellipse: (params) => new SVGTOPO("ellipse", params),
+  feBlend: (params) => new SVGTOPO("feBlend", params),
+  feColorMatrix: (params) => new SVGTOPO("feColorMatrix", params),
+  feComponentTransfer: (params) => new SVGTOPO("feComponentTransfer", params),
+  feComposite: (params) => new SVGTOPO("feComposite", params),
+  feConvolveMatrix: (params) => new SVGTOPO("feConvolveMatrix", params),
+  feDiffuseLighting: (params) => new SVGTOPO("feDiffuseLighting", params),
+  feDisplacementMap: (params) => new SVGTOPO("feDisplacementMap", params),
+  feDistantLight: (params) => new SVGTOPO("feDistantLight", params),
+  feDropShadow: (params) => new SVGTOPO("feDropShadow", params),
+  feFlood: (params) => new SVGTOPO("feFlood", params),
+  feFuncA: (params) => new SVGTOPO("feFuncA", params),
+  feFuncB: (params) => new SVGTOPO("feFuncB", params),
+  feFuncG: (params) => new SVGTOPO("feFuncG", params),
+  feFuncR: (params) => new SVGTOPO("feFuncR", params),
+  feGaussianBlur: (params) => new SVGTOPO("feGaussianBlur", params),
+  feImage: (params) => new SVGTOPO("feImage", params),
+  feMerge: (params) => new SVGTOPO("feMerge", params),
+  feMergeNode: (params) => new SVGTOPO("feMergeNode", params),
+  feMorphology: (params) => new SVGTOPO("feMorphology", params),
+  feOffset: (params) => new SVGTOPO("feOffset", params),
+  fePointLight: (params) => new SVGTOPO("fePointLight", params),
+  feSpecularLighting: (params) => new SVGTOPO("feSpecularLighting", params),
+  feSpotLight: (params) => new SVGTOPO("feSpotLight", params),
+  feTile: (params) => new SVGTOPO("feTile", params),
+  feTurbulence: (params) => new SVGTOPO("feTurbulence", params),
+  filter: (params) => new SVGTOPO("filter", params),
+  foreignObject: (params) => new SVGTOPO("foreignObject", params),
+  g: (params) => new SVGTOPO("g", params),
+  image: (params) => new SVGTOPO("image", params),
+  line: (params) => new SVGTOPO("line", params),
+  linearGradient: (params) => new SVGTOPO("linearGradient", params),
+  marker: (params) => new SVGTOPO("marker", params),
+  mask: (params) => new SVGTOPO("mask", params),
+  metadata: (params) => new SVGTOPO("metadata", params),
+  mpath: (params) => new SVGTOPO("mpath", params),
+  path: (params) => new SVGTOPO("path", params),
+  pattern: (params) => new SVGTOPO("pattern", params),
+  polygon: (params) => new SVGTOPO("polygon", params),
+  polyline: (params) => new SVGTOPO("polyline", params),
+  radialGradient: (params) => new SVGTOPO("radialGradient", params),
+  rect: (params) => new SVGTOPO("rect", params),
+  script: (params) => new SVGTOPO("script", params),
+  set: (params) => new SVGTOPO("set", params),
+  stop: (params) => new SVGTOPO("stop", params),
+  style: (params) => new SVGTOPO("style", params),
+  svg: (params) => new SVGTOPO("svg", params),
+  switch: (params) => new SVGTOPO("switch", params),
+  symbol: (params) => new SVGTOPO("symbol", params),
+  text: (params) => new SVGTOPO("text", params),
+  textPath: (params) => new SVGTOPO("textPath", params),
+  title: (params) => new SVGTOPO("title", params),
+  tspan: (params) => new SVGTOPO("tspan", params),
+  use: (params) => new SVGTOPO("use", params),
+  view: (params) => new SVGTOPO("view", params),
 };
 
 export default SVGTopo;
