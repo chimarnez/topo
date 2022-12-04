@@ -1,3 +1,3 @@
-import HTMLTopo from "./topo/html-topo";
-import SVGTopo from "./topo/svg-topo";
-export { HTMLTopo, SVGTopo };
+import topoh, { HTMLTopo } from "./topo/html-topo";
+import topos, { SVGTopo } from "./topo/svg-topo";
+export { topoh, topos, HTMLTopo, SVGTopo };

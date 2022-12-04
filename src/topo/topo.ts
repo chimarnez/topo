@@ -1,26 +1,24 @@
 import { ObjectWithStringKeys } from "./types";
 
-export abstract class Topo<T> {
+export abstract class Topo {
   abstract element: Element;
 
-  abstract attrs(attrName: string, fn: (el: Topo<T>) => any): Topo<T>;
-  abstract attrs(attrName: string, value: string): Topo<T>;
-  abstract attrs(attrs: ObjectWithStringKeys): Topo<T>;
-  abstract attrs(attrs: string | ObjectWithStringKeys, value?: any): Topo<T>;
+  abstract attrs(...args: unknown[]): unknown;
 
-  abstract addClss(...classesToAppend: string[]): Topo<T>;
-  abstract removeClss(...classestoRemove: string[]): Topo<T>;
+  abstract addClss(...classesToAppend: string[]): unknown;
+  abstract removeClss(...classestoRemove: string[]): unknown;
+  abstract clean(restore: boolean): unknown;
 
-  abstract event<V extends keyof ElementEventMap>(
-    eventName: V,
-    fn: (ev: ElementEventMap[V], ele?: Topo<T>) => void
-  ): Topo<T>;
+  abstract event(
+    eventName: unknown,
+    fn: (ev: unknown, ele: unknown) => void
+  ): unknown;
 }
 
 export class BaseTopo<T, U> {
   element: Element;
-  params?: U;
-  constructor(element: Element, params?: U) {
+  params: U;
+  constructor(element: Element, params: U) {
     this.element = element;
     this.params = params;
   }
@@ -45,7 +43,6 @@ export class BaseTopo<T, U> {
     fn(this as unknown as T);
     return this as unknown as T;
   }
-
   into(container: Element) {
     container.appendChild(this.element);
     return this as unknown as T;

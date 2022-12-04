@@ -7,20 +7,29 @@ function htmlLikeElement<T extends keyof HTMLElementTagNameMap>(
   return document.createElement(tagName);
 }
 
-class HTMLTOPO<T extends keyof HTMLElementTagNameMap, U>
-  extends BaseTopo<HTMLTOPO<T, U>, U>
-  implements Topo<T>
+export class HTMLTopo<T extends keyof HTMLElementTagNameMap, U>
+  extends BaseTopo<HTMLTopo<T, U>, U>
+  implements Topo
 {
   element: HTMLElementTagNameMap[T];
-  constructor(tagName: T, params?: U) {
+  private readonly tagName: T;
+  constructor(tagName: T, params: U) {
     const element = htmlLikeElement(tagName);
     super(element, params);
     this.element = element;
+    this.tagName = tagName;
   }
-  attrs(attrName: string, fn: (el: HTMLTOPO<T, U>) => any): HTMLTOPO<T, U>;
-  attrs(attrName: string, value: string): HTMLTOPO<T, U>;
-  attrs(attrs: ObjectWithStringKeys): HTMLTOPO<T, U>;
-  attrs(attrs: string | ObjectWithStringKeys, value?: any): HTMLTOPO<T, U> {
+
+  clean(restore = true): HTMLTopo<T, U> {
+    this.element.remove();
+    if (restore) this.element = htmlLikeElement(this.tagName);
+    return this;
+  }
+
+  attrs(attrName: string, fn: (el: HTMLTopo<T, U>) => any): HTMLTopo<T, U>;
+  attrs(attrName: string, value: string): HTMLTopo<T, U>;
+  attrs(attrs: ObjectWithStringKeys): HTMLTopo<T, U>;
+  attrs(attrs: string | ObjectWithStringKeys, value?: any): HTMLTopo<T, U> {
     if (typeof attrs === "string") {
       this.element.setAttribute(
         attrs,
@@ -35,7 +44,7 @@ class HTMLTOPO<T extends keyof HTMLElementTagNameMap, U>
   }
   event<Y extends keyof HTMLElementEventMap>(
     eventName: Y,
-    fn: (ev: HTMLElementEventMap[Y], ele?: HTMLTOPO<T, U>) => void
+    fn: (ev: HTMLElementEventMap[Y], ele: HTMLTopo<T, U>) => void
   ) {
     const newEvent = (ev: HTMLElementEventMap[Y]) => {
       fn(ev, this);
@@ -48,122 +57,122 @@ class HTMLTOPO<T extends keyof HTMLElementTagNameMap, U>
   }
 }
 
-const HTMLTopo: {
+const topoh: {
   [Property in keyof HTMLElementTagNameMap]: <U>(
-    params?: U
-  ) => HTMLTOPO<Property, U>;
+    params: U
+  ) => HTMLTopo<Property, U>;
 } = {
-  a: (params) => new HTMLTOPO("a", params),
-  abbr: (params) => new HTMLTOPO("abbr", params),
-  address: (params) => new HTMLTOPO("address", params),
-  area: (params) => new HTMLTOPO("area", params),
-  article: (params) => new HTMLTOPO("article", params),
-  aside: (params) => new HTMLTOPO("aside", params),
-  audio: (params) => new HTMLTOPO("audio", params),
-  b: (params) => new HTMLTOPO("b", params),
-  base: (params) => new HTMLTOPO("base", params),
-  bdi: (params) => new HTMLTOPO("bdi", params),
-  bdo: (params) => new HTMLTOPO("bdo", params),
-  blockquote: (params) => new HTMLTOPO("blockquote", params),
-  body: (params) => new HTMLTOPO("body", params),
-  br: (params) => new HTMLTOPO("br", params),
-  button: (params) => new HTMLTOPO("button", params),
-  canvas: (params) => new HTMLTOPO("canvas", params),
-  caption: (params) => new HTMLTOPO("caption", params),
-  cite: (params) => new HTMLTOPO("cite", params),
-  code: (params) => new HTMLTOPO("code", params),
-  col: (params) => new HTMLTOPO("col", params),
-  colgroup: (params) => new HTMLTOPO("colgroup", params),
-  data: (params) => new HTMLTOPO("data", params),
-  datalist: (params) => new HTMLTOPO("datalist", params),
-  dd: (params) => new HTMLTOPO("dd", params),
-  del: (params) => new HTMLTOPO("del", params),
-  details: (params) => new HTMLTOPO("details", params),
-  dfn: (params) => new HTMLTOPO("dfn", params),
-  dialog: (params) => new HTMLTOPO("dialog", params),
-  div: (params) => new HTMLTOPO("div", params),
-  dl: (params) => new HTMLTOPO("dl", params),
-  dt: (params) => new HTMLTOPO("dt", params),
-  em: (params) => new HTMLTOPO("em", params),
-  embed: (params) => new HTMLTOPO("embed", params),
-  fieldset: (params) => new HTMLTOPO("fieldset", params),
-  figcaption: (params) => new HTMLTOPO("figcaption", params),
-  figure: (params) => new HTMLTOPO("figure", params),
-  footer: (params) => new HTMLTOPO("footer", params),
-  form: (params) => new HTMLTOPO("form", params),
-  h1: (params) => new HTMLTOPO("h1", params),
-  h2: (params) => new HTMLTOPO("h2", params),
-  h3: (params) => new HTMLTOPO("h3", params),
-  h4: (params) => new HTMLTOPO("h4", params),
-  h5: (params) => new HTMLTOPO("h5", params),
-  h6: (params) => new HTMLTOPO("h6", params),
-  head: (params) => new HTMLTOPO("head", params),
-  header: (params) => new HTMLTOPO("header", params),
-  hgroup: (params) => new HTMLTOPO("hgroup", params),
-  hr: (params) => new HTMLTOPO("hr", params),
-  html: (params) => new HTMLTOPO("html", params),
-  i: (params) => new HTMLTOPO("i", params),
-  iframe: (params) => new HTMLTOPO("iframe", params),
-  img: (params) => new HTMLTOPO("img", params),
-  input: (params) => new HTMLTOPO("input", params),
-  ins: (params) => new HTMLTOPO("ins", params),
-  kbd: (params) => new HTMLTOPO("kbd", params),
-  label: (params) => new HTMLTOPO("label", params),
-  legend: (params) => new HTMLTOPO("legend", params),
-  li: (params) => new HTMLTOPO("li", params),
-  link: (params) => new HTMLTOPO("link", params),
-  main: (params) => new HTMLTOPO("main", params),
-  map: (params) => new HTMLTOPO("map", params),
-  mark: (params) => new HTMLTOPO("mark", params),
-  menu: (params) => new HTMLTOPO("menu", params),
-  meta: (params) => new HTMLTOPO("meta", params),
-  meter: (params) => new HTMLTOPO("meter", params),
-  nav: (params) => new HTMLTOPO("nav", params),
-  noscript: (params) => new HTMLTOPO("noscript", params),
-  object: (params) => new HTMLTOPO("object", params),
-  ol: (params) => new HTMLTOPO("ol", params),
-  optgroup: (params) => new HTMLTOPO("optgroup", params),
-  option: (params) => new HTMLTOPO("option", params),
-  output: (params) => new HTMLTOPO("output", params),
-  p: (params) => new HTMLTOPO("p", params),
-  picture: (params) => new HTMLTOPO("picture", params),
-  pre: (params) => new HTMLTOPO("pre", params),
-  progress: (params) => new HTMLTOPO("progress", params),
-  q: (params) => new HTMLTOPO("q", params),
-  rp: (params) => new HTMLTOPO("rp", params),
-  rt: (params) => new HTMLTOPO("rt", params),
-  ruby: (params) => new HTMLTOPO("ruby", params),
-  s: (params) => new HTMLTOPO("s", params),
-  samp: (params) => new HTMLTOPO("samp", params),
-  script: (params) => new HTMLTOPO("script", params),
-  section: (params) => new HTMLTOPO("section", params),
-  select: (params) => new HTMLTOPO("select", params),
-  slot: (params) => new HTMLTOPO("slot", params),
-  small: (params) => new HTMLTOPO("small", params),
-  source: (params) => new HTMLTOPO("source", params),
-  span: (params) => new HTMLTOPO("span", params),
-  strong: (params) => new HTMLTOPO("strong", params),
-  style: (params) => new HTMLTOPO("style", params),
-  sub: (params) => new HTMLTOPO("sub", params),
-  summary: (params) => new HTMLTOPO("summary", params),
-  sup: (params) => new HTMLTOPO("sup", params),
-  table: (params) => new HTMLTOPO("table", params),
-  tbody: (params) => new HTMLTOPO("tbody", params),
-  td: (params) => new HTMLTOPO("td", params),
-  template: (params) => new HTMLTOPO("template", params),
-  textarea: (params) => new HTMLTOPO("textarea", params),
-  tfoot: (params) => new HTMLTOPO("tfoot", params),
-  th: (params) => new HTMLTOPO("th", params),
-  thead: (params) => new HTMLTOPO("thead", params),
-  time: (params) => new HTMLTOPO("time", params),
-  title: (params) => new HTMLTOPO("title", params),
-  tr: (params) => new HTMLTOPO("tr", params),
-  track: (params) => new HTMLTOPO("track", params),
-  u: (params) => new HTMLTOPO("u", params),
-  ul: (params) => new HTMLTOPO("ul", params),
-  var: (params) => new HTMLTOPO("var", params),
-  video: (params) => new HTMLTOPO("video", params),
-  wbr: (params) => new HTMLTOPO("wbr", params),
+  a: (params) => new HTMLTopo("a", params),
+  abbr: (params) => new HTMLTopo("abbr", params),
+  address: (params) => new HTMLTopo("address", params),
+  area: (params) => new HTMLTopo("area", params),
+  article: (params) => new HTMLTopo("article", params),
+  aside: (params) => new HTMLTopo("aside", params),
+  audio: (params) => new HTMLTopo("audio", params),
+  b: (params) => new HTMLTopo("b", params),
+  base: (params) => new HTMLTopo("base", params),
+  bdi: (params) => new HTMLTopo("bdi", params),
+  bdo: (params) => new HTMLTopo("bdo", params),
+  blockquote: (params) => new HTMLTopo("blockquote", params),
+  body: (params) => new HTMLTopo("body", params),
+  br: (params) => new HTMLTopo("br", params),
+  button: (params) => new HTMLTopo("button", params),
+  canvas: (params) => new HTMLTopo("canvas", params),
+  caption: (params) => new HTMLTopo("caption", params),
+  cite: (params) => new HTMLTopo("cite", params),
+  code: (params) => new HTMLTopo("code", params),
+  col: (params) => new HTMLTopo("col", params),
+  colgroup: (params) => new HTMLTopo("colgroup", params),
+  data: (params) => new HTMLTopo("data", params),
+  datalist: (params) => new HTMLTopo("datalist", params),
+  dd: (params) => new HTMLTopo("dd", params),
+  del: (params) => new HTMLTopo("del", params),
+  details: (params) => new HTMLTopo("details", params),
+  dfn: (params) => new HTMLTopo("dfn", params),
+  dialog: (params) => new HTMLTopo("dialog", params),
+  div: (params) => new HTMLTopo("div", params),
+  dl: (params) => new HTMLTopo("dl", params),
+  dt: (params) => new HTMLTopo("dt", params),
+  em: (params) => new HTMLTopo("em", params),
+  embed: (params) => new HTMLTopo("embed", params),
+  fieldset: (params) => new HTMLTopo("fieldset", params),
+  figcaption: (params) => new HTMLTopo("figcaption", params),
+  figure: (params) => new HTMLTopo("figure", params),
+  footer: (params) => new HTMLTopo("footer", params),
+  form: (params) => new HTMLTopo("form", params),
+  h1: (params) => new HTMLTopo("h1", params),
+  h2: (params) => new HTMLTopo("h2", params),
+  h3: (params) => new HTMLTopo("h3", params),
+  h4: (params) => new HTMLTopo("h4", params),
+  h5: (params) => new HTMLTopo("h5", params),
+  h6: (params) => new HTMLTopo("h6", params),
+  head: (params) => new HTMLTopo("head", params),
+  header: (params) => new HTMLTopo("header", params),
+  hgroup: (params) => new HTMLTopo("hgroup", params),
+  hr: (params) => new HTMLTopo("hr", params),
+  html: (params) => new HTMLTopo("html", params),
+  i: (params) => new HTMLTopo("i", params),
+  iframe: (params) => new HTMLTopo("iframe", params),
+  img: (params) => new HTMLTopo("img", params),
+  input: (params) => new HTMLTopo("input", params),
+  ins: (params) => new HTMLTopo("ins", params),
+  kbd: (params) => new HTMLTopo("kbd", params),
+  label: (params) => new HTMLTopo("label", params),
+  legend: (params) => new HTMLTopo("legend", params),
+  li: (params) => new HTMLTopo("li", params),
+  link: (params) => new HTMLTopo("link", params),
+  main: (params) => new HTMLTopo("main", params),
+  map: (params) => new HTMLTopo("map", params),
+  mark: (params) => new HTMLTopo("mark", params),
+  menu: (params) => new HTMLTopo("menu", params),
+  meta: (params) => new HTMLTopo("meta", params),
+  meter: (params) => new HTMLTopo("meter", params),
+  nav: (params) => new HTMLTopo("nav", params),
+  noscript: (params) => new HTMLTopo("noscript", params),
+  object: (params) => new HTMLTopo("object", params),
+  ol: (params) => new HTMLTopo("ol", params),
+  optgroup: (params) => new HTMLTopo("optgroup", params),
+  option: (params) => new HTMLTopo("option", params),
+  output: (params) => new HTMLTopo("output", params),
+  p: (params) => new HTMLTopo("p", params),
+  picture: (params) => new HTMLTopo("picture", params),
+  pre: (params) => new HTMLTopo("pre", params),
+  progress: (params) => new HTMLTopo("progress", params),
+  q: (params) => new HTMLTopo("q", params),
+  rp: (params) => new HTMLTopo("rp", params),
+  rt: (params) => new HTMLTopo("rt", params),
+  ruby: (params) => new HTMLTopo("ruby", params),
+  s: (params) => new HTMLTopo("s", params),
+  samp: (params) => new HTMLTopo("samp", params),
+  script: (params) => new HTMLTopo("script", params),
+  section: (params) => new HTMLTopo("section", params),
+  select: (params) => new HTMLTopo("select", params),
+  slot: (params) => new HTMLTopo("slot", params),
+  small: (params) => new HTMLTopo("small", params),
+  source: (params) => new HTMLTopo("source", params),
+  span: (params) => new HTMLTopo("span", params),
+  strong: (params) => new HTMLTopo("strong", params),
+  style: (params) => new HTMLTopo("style", params),
+  sub: (params) => new HTMLTopo("sub", params),
+  summary: (params) => new HTMLTopo("summary", params),
+  sup: (params) => new HTMLTopo("sup", params),
+  table: (params) => new HTMLTopo("table", params),
+  tbody: (params) => new HTMLTopo("tbody", params),
+  td: (params) => new HTMLTopo("td", params),
+  template: (params) => new HTMLTopo("template", params),
+  textarea: (params) => new HTMLTopo("textarea", params),
+  tfoot: (params) => new HTMLTopo("tfoot", params),
+  th: (params) => new HTMLTopo("th", params),
+  thead: (params) => new HTMLTopo("thead", params),
+  time: (params) => new HTMLTopo("time", params),
+  title: (params) => new HTMLTopo("title", params),
+  tr: (params) => new HTMLTopo("tr", params),
+  track: (params) => new HTMLTopo("track", params),
+  u: (params) => new HTMLTopo("u", params),
+  ul: (params) => new HTMLTopo("ul", params),
+  var: (params) => new HTMLTopo("var", params),
+  video: (params) => new HTMLTopo("video", params),
+  wbr: (params) => new HTMLTopo("wbr", params),
 };
 
-export default HTMLTopo;
+export default topoh;
