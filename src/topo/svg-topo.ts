@@ -130,7 +130,3 @@ const topos: {
 };
 
 export default topos;
-
-const topo = topos.circle({ cx: 1 }).attrs("cx", ({ params, element }) => {
-  const { getBBox } = element;
-});
